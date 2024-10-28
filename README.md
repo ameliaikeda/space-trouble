@@ -28,5 +28,6 @@ These do sound fun, and for an MVP I would have just set up destinations based o
 
 # Running
 
-You can just `docker-compose up` and have a play around.
+You can just `docker-compose up`, though I haven't added the goose migration to huma's commands - it would just be added as `cli.Root().AddCommand()` in `main()`.
 Tests still run outside of docker, and you need postgres locally to run them (they work automatically on macOS with postgres, though)
+
