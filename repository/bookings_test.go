@@ -63,6 +63,8 @@ func AppContext[T testing.TB](t T) context.Context {
 }
 
 func TestBooking_CreateBooking(t *testing.T) {
+	t.Parallel()
+
 	db := NewDB(t)
 	gdb, err := gorm.Open(postgres.New(postgres.Config{Conn: db}))
 	defer func() {
@@ -106,4 +108,49 @@ func TestBooking_CreateBooking(t *testing.T) {
 
 	assert.Len(t, bookings, 1)
 	assert.EqualExportedValues(t, bookings[0], b)
+}
+
+func TestBooking_ListBookingsForLaunchpad(t *testing.T) {
+	t.Parallel()
+
+	db := NewDB(t)
+	gdb, err := gorm.Open(postgres.New(postgres.Config{Conn: db}))
+	defer func() {
+		d, _ := gdb.DB()
+		if d != nil {
+			_ = d.Close()
+		}
+	}()
+
+	require.NoError(t, err, "gorm should initialize")
+
+	bk := New(gdb)
+
+	subject := example()
+
+	_, _ = bk.CreateBooking(AppContext(t), example())
+	_, _ = bk.CreateBooking(AppContext(t), example())
+	_, _ = bk.CreateBooking(AppContext(t), example())
+
+	correct, err := bk.ListBookingsForLaunchpad(AppContext(t), subject.LaunchpadID)
+	require.NoError(t, err)
+
+	assert.Len(t, correct, 3)
+
+	incorrect, err := bk.ListBookingsForLaunchpad(AppContext(t), subject.LaunchpadID+"_incorrect")
+	require.NoError(t, err)
+
+	assert.Len(t, incorrect, 0)
+}
+
+func example() *models.Booking {
+	return &models.Booking{
+		LaunchpadID: "testing ID",
+		Destination: models.DestinationMars,
+		FirstName:   "Jane",
+		LastName:    "Doe",
+		Gender:      models.GenderUnspecified,
+		DateOfBirth: time.Date(1990, time.January, 1, 0, 0, 0, 0, time.UTC),
+		LaunchDate:  time.Date(2024, time.October, 29, 0, 0, 0, 0, time.UTC),
+	}
 }

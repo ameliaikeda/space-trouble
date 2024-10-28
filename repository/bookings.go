@@ -52,8 +52,8 @@ func (r *booking) ListBookings(ctx context.Context) ([]*models.Booking, error) {
 	return bookings, nil
 }
 
-func (r *booking) ListBookingsForLaunchpad(ctx context.Context, launchpadID string) ([]models.Booking, error) {
-	bookings := make([]models.Booking, 0)
+func (r *booking) ListBookingsForLaunchpad(ctx context.Context, launchpadID string) ([]*models.Booking, error) {
+	var bookings []*models.Booking
 
 	tx := r.db.WithContext(ctx).Order("id asc").Where(&models.Booking{LaunchpadID: launchpadID}).Find(&bookings)
 	if err := tx.Error; err != nil {
