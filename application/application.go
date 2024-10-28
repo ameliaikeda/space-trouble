@@ -4,23 +4,26 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/ameliaikeda/tabeo/repository"
 
 	"github.com/danielgtaylor/huma/v2"
 	"gorm.io/gorm"
 )
 
 type Application struct {
-	DB *gorm.DB
+	Repo repository.Bookings
+	db   *gorm.DB
 }
 
 func New(db *gorm.DB) *Application {
 	return &Application{
-		DB: db,
+		Repo: repository.New(db),
+		db:   db,
 	}
 }
 
 func (a *Application) Shutdown(ctx context.Context) error {
-	db, err := a.DB.DB()
+	db, err := a.db.DB()
 	if err != nil {
 		if errors.Is(err, gorm.ErrInvalidDB) {
 			// we've already been shut down, ignore this
@@ -45,5 +48,7 @@ func (a *Application) Shutdown(ctx context.Context) error {
 }
 
 func (a *Application) Register(api huma.API) {
-	//
+	huma.Post(api, "/bookings", a.CreateBooking)
+	huma.Get(api, "/bookings/{launchpad_id}", a.ListBookings)
+	huma.Delete(api, "/bookings", a.DeleteBooking)
 }

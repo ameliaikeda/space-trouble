@@ -7,7 +7,7 @@ import (
 )
 
 type ListBookingsRequest struct {
-	LaunchpadID string `json:"launchpad_id" doc:"Launchpad ID to filter by" example:"5e9e4502f509094188566f88" required:"false"`
+	LaunchpadID string `path:"launchpad_id" doc:"Launchpad ID to filter by" example:"5e9e4502f509094188566f88" required:"false"`
 }
 
 type ListBookingsResponse struct {

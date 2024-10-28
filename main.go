@@ -60,7 +60,7 @@ func main() {
 // Options for the CLI. Pass `--port` or set the `SERVICE_PORT` env var.
 type Options struct {
 	// HTTP Options
-	Port int `help:"HTTP Port to listen on" short:"p" default:"8888"`
+	Port int `help:"HTTP Port to listen on" short:"p" default:"8000"`
 
 	DBHost    string `name:"db-host" help:"Database host" default:"localhost"`
 	DBPort    int    `name:"db-port" help:"Database port" default:"5432"`
