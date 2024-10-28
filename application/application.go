@@ -51,6 +51,7 @@ func (a *Application) Shutdown(ctx context.Context) error {
 
 func (a *Application) Register(api huma.API) {
 	huma.Post(api, "/bookings", a.CreateBooking)
-	huma.Get(api, "/bookings/{launchpad_id}", a.ListBookings)
+	huma.Get(api, "/bookings/{launchpad_id}", a.ListBookingsByLaunchpad)
+	huma.Get(api, "/bookings", a.ListBookings)
 	huma.Delete(api, "/bookings", a.DeleteBooking)
 }

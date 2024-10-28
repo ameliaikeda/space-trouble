@@ -25,9 +25,9 @@ func TestApplication_ListBookings(t *testing.T) {
 func TestApplication_ListBookingsWithLaunchpad(t *testing.T) {
 	app := &Application{Repo: Repo{}}
 
-	request := &ListBookingsRequest{LaunchpadID: "testing"}
+	request := &ListLaunchpadBookingsRequest{LaunchpadID: "testing"}
 
-	rsp, err := app.ListBookings(context.Background(), request)
+	rsp, err := app.ListBookingsByLaunchpad(context.Background(), request)
 
 	require.NoError(t, err)
 	require.NotNil(t, rsp)

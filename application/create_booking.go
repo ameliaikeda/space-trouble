@@ -45,7 +45,7 @@ func (a *Application) ValidateLaunchpad(ctx context.Context, id string) error {
 	return nil
 }
 
-func (a *Application) ValidateLaunchDate(ctx context.Context, date time.Time) error {
+func (a *Application) ValidateLaunchDate(ctx context.Context, date time.Time, launchpadID string) error {
 	year, month, day := time.Now().Date()
 	now := time.Date(year, month, day, 0, 0, 0, 0, time.UTC)
 
@@ -64,7 +64,7 @@ func (a *Application) ValidateLaunchDate(ctx context.Context, date time.Time) er
 		// we don't care if the launch is TBD or not - if it's in an api slot, we bail out.
 		t := time.Unix(launch.DateUnix, 0).Format(time.DateOnly)
 
-		if formatted == t {
+		if formatted == t && launch.LaunchpadID == launchpadID {
 			return huma.Error400BadRequest("another launch clashes with that launch date")
 		}
 	}
@@ -84,7 +84,7 @@ func (a *Application) CreateBooking(ctx context.Context, req *CreateBookingReque
 		return nil, err
 	}
 
-	if err := a.ValidateLaunchDate(ctx, req.LaunchDate); err != nil {
+	if err := a.ValidateLaunchDate(ctx, req.LaunchDate, req.LaunchpadID); err != nil {
 		return nil, err
 	}
 
