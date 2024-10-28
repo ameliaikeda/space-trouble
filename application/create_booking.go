@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/ameliaikeda/tabeo/models"
+	"github.com/danielgtaylor/huma/v2"
 )
 
 type CreateBookingRequest struct {
@@ -22,5 +23,19 @@ type CreateBookingResponse struct {
 }
 
 func (a *Application) CreateBooking(ctx context.Context, req *CreateBookingRequest) (*CreateBookingResponse, error) {
-	return nil, nil
+	booking, err := a.Repo.CreateBooking(ctx, &models.Booking{
+		FirstName:   req.FirstName,
+		LastName:    req.LastName,
+		Gender:      req.Gender,
+		DateOfBirth: req.DateOfBirth,
+		LaunchpadID: req.LaunchpadID,
+		LaunchDate:  req.LaunchDate,
+		Destination: req.Destination,
+	})
+
+	if err != nil {
+		return nil, huma.Error500InternalServerError("failed to create booking", err)
+	}
+
+	return &CreateBookingResponse{Booking: booking}, nil
 }

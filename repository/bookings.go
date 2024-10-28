@@ -26,8 +26,8 @@ func (r *booking) CreateBooking(ctx context.Context, booking *models.Booking) (*
 	return booking, nil
 }
 
-func (r *booking) DeleteBooking(ctx context.Context, booking *models.Booking) (bool, error) {
-	b := &models.Booking{ID: booking.ID}
+func (r *booking) DeleteBooking(ctx context.Context, id string) (bool, error) {
+	b := &models.Booking{ID: id}
 
 	if b.ID == "" {
 		return false, ErrMissingBookingID

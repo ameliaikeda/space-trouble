@@ -9,7 +9,7 @@ import (
 
 type Bookings interface {
 	CreateBooking(context.Context, *models.Booking) (*models.Booking, error)
-	DeleteBooking(context.Context, *models.Booking) (bool, error)
+	DeleteBooking(context.Context, string) (bool, error)
 	ListBookings(context.Context) ([]*models.Booking, error)
 	ListBookingsForLaunchpad(context.Context, string) ([]*models.Booking, error)
 }

@@ -2,6 +2,7 @@ package application
 
 import (
 	"context"
+	"github.com/danielgtaylor/huma/v2"
 
 	"github.com/ameliaikeda/tabeo/models"
 )
@@ -15,5 +16,19 @@ type ListBookingsResponse struct {
 }
 
 func (a *Application) ListBookings(ctx context.Context, req *ListBookingsRequest) (*ListBookingsResponse, error) {
-	return nil, nil
+	var bookings []*models.Booking
+	var err error
+
+	switch {
+	case req.LaunchpadID != "":
+		bookings, err = a.Repo.ListBookingsForLaunchpad(ctx, req.LaunchpadID)
+	default:
+		bookings, err = a.Repo.ListBookings(ctx)
+	}
+
+	if err != nil {
+		return nil, huma.Error500InternalServerError("failed to fetch bookings", err)
+	}
+
+	return &ListBookingsResponse{Bookings: bookings}, nil
 }

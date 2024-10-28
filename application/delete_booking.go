@@ -2,6 +2,7 @@ package application
 
 import (
 	"context"
+	"github.com/danielgtaylor/huma/v2"
 )
 
 type DeleteBookingRequest struct {
@@ -13,5 +14,10 @@ type DeleteBookingResponse struct {
 }
 
 func (a *Application) DeleteBooking(ctx context.Context, req *DeleteBookingRequest) (*DeleteBookingResponse, error) {
-	return nil, nil
+	ok, err := a.Repo.DeleteBooking(ctx, req.ID)
+	if err != nil {
+		return nil, huma.Error500InternalServerError("failed to delete booking", err)
+	}
+
+	return &DeleteBookingResponse{Deleted: ok}, nil
 }
