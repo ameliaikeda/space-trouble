@@ -62,6 +62,8 @@ type Options struct {
 	// HTTP Options
 	Port int `help:"HTTP Port to listen on" short:"p" default:"8000"`
 
+	SpacexAPI string `name:"spacex-api" help:"SpaceX API Base URL" default:"https://api.spacexdata.com"`
+
 	DBHost    string `name:"db-host" help:"Database host" default:"localhost"`
 	DBPort    int    `name:"db-port" help:"Database port" default:"5432"`
 	DBUser    string `name:"db-user" help:"Database username"`
