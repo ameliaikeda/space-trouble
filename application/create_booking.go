@@ -2,6 +2,7 @@ package application
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/ameliaikeda/tabeo/models"
@@ -22,7 +23,71 @@ type CreateBookingResponse struct {
 	Booking *models.Booking `json:"booking" doc:"The created booking"`
 }
 
+func (a *Application) ValidateLaunchpad(ctx context.Context, id string) error {
+	// validate the launchpad actually exists
+	pads, err := a.API.Launchpads(ctx)
+	if err != nil {
+		return huma.Error500InternalServerError("failed to check launchpads", err)
+	}
+
+	found := false
+	for _, pad := range pads {
+		if pad.ID == id {
+			found = true
+			break
+		}
+	}
+
+	if !found {
+		return huma.Error400BadRequest(fmt.Sprintf("launchpad '%s' does not exist", id))
+	}
+
+	return nil
+}
+
+func (a *Application) ValidateLaunchDate(ctx context.Context, date time.Time) error {
+	year, month, day := time.Now().Date()
+	now := time.Date(year, month, day, 0, 0, 0, 0, time.UTC)
+
+	if date.Before(now) {
+		return huma.Error400BadRequest("launch date cannot be in the past")
+	}
+
+	launches, err := a.API.UpcomingLaunches(ctx)
+	if err != nil {
+		return huma.Error500InternalServerError("failed to check launches", err)
+	}
+
+	formatted := date.Format(time.DateOnly)
+
+	for _, launch := range launches {
+		// we don't care if the launch is TBD or not - if it's in an api slot, we bail out.
+		t := time.Unix(launch.DateUnix, 0).Format(time.DateOnly)
+
+		if formatted == t {
+			return huma.Error400BadRequest("another launch clashes with that launch date")
+		}
+	}
+
+	return nil
+}
+
+// CreateBooking will only allow a booking if the following are true:
+// - The launch date is in the future
+// - The launchpad given actually exists
+// - There are no launches scheduled for the given launchpad on the launch date.
+//
+// It does not actually check if there is a booking on a given day here - it could easily be changed to do so.
+// Whether we allow more than one person to book onto a flight is a question to ask around requirements gathering.
 func (a *Application) CreateBooking(ctx context.Context, req *CreateBookingRequest) (*CreateBookingResponse, error) {
+	if err := a.ValidateLaunchpad(ctx, req.LaunchpadID); err != nil {
+		return nil, err
+	}
+
+	if err := a.ValidateLaunchDate(ctx, req.LaunchDate); err != nil {
+		return nil, err
+	}
+
 	booking, err := a.Repo.CreateBooking(ctx, &models.Booking{
 		FirstName:   req.FirstName,
 		LastName:    req.LastName,

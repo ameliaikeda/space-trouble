@@ -2,6 +2,7 @@ package application
 
 import (
 	"context"
+	"github.com/ameliaikeda/tabeo/lib/launchpad"
 	"github.com/danielgtaylor/huma/v2"
 	"time"
 
@@ -70,3 +71,33 @@ func (r Repo) ListBookingsForLaunchpad(_ context.Context, s string) ([]*models.B
 }
 
 var _ repository.Bookings = (*Repo)(nil)
+
+type API struct {
+	//
+}
+
+func (a API) Launchpads(_ context.Context) ([]launchpad.Launchpad, error) {
+	return []launchpad.Launchpad{
+		{ID: "test launchpad 1"},
+		{ID: "test launchpad 2"},
+		{ID: "test launchpad 3"},
+		{ID: "test launchpad 4"},
+		{ID: "5e9e4502f509094188566f88"},
+	}, nil
+}
+
+func (a API) UpcomingLaunches(_ context.Context) ([]launchpad.Launch, error) {
+	t := truncateDate(time.Now())
+
+	return []launchpad.Launch{
+		{DateUnix: t.AddDate(0, 0, 13).Unix(), LaunchpadID: "5e9e4502f509094188566f88"},
+		{DateUnix: t.AddDate(0, 0, 0).Unix(), LaunchpadID: "clashing"},
+		{DateUnix: t.AddDate(0, 0, 1).Unix(), LaunchpadID: "tomorrow"},
+	}, nil
+}
+
+func truncateDate(t time.Time) time.Time {
+	year, month, day := t.Date()
+
+	return time.Date(year, month, day, 0, 0, 0, 0, time.UTC)
+}

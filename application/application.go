@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/ameliaikeda/tabeo/lib/launchpad"
 	"github.com/ameliaikeda/tabeo/repository"
 
 	"github.com/danielgtaylor/huma/v2"
@@ -12,6 +13,7 @@ import (
 
 type Application struct {
 	Repo repository.Bookings
+	API  launchpad.API
 	db   *gorm.DB
 }
 

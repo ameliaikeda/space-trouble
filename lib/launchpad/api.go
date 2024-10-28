@@ -15,6 +15,7 @@ import (
 
 type API interface {
 	Launchpads(ctx context.Context) ([]Launchpad, error)
+	UpcomingLaunches(ctx context.Context) ([]Launch, error)
 }
 
 type api struct {

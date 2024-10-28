@@ -10,7 +10,7 @@ import (
 
 func exampleRequest() *CreateBookingRequest {
 	dob, _ := time.Parse("2006-01-02", "1990-06-01")
-	tol, _ := time.Parse("2006-01-02", "2025-06-01")
+	tol := truncateDate(time.Now().UTC())
 
 	return &CreateBookingRequest{
 		LaunchpadID: "5e9e4502f509094188566f88",
@@ -24,7 +24,7 @@ func exampleRequest() *CreateBookingRequest {
 }
 
 func TestApplication_CreateBooking(t *testing.T) {
-	app := &Application{Repo: Repo{}}
+	app := &Application{Repo: Repo{}, API: API{}}
 
 	request := exampleRequest()
 
